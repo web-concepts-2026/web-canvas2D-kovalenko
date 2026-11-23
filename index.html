@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas2D</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <main>
+        <section id="left">
+            <ul id="tools">
+                <li><button class="icon"><img src="assets/draw.svg" alt="draw"></button></li>
+                <li><button class="icon"><img src="assets/erase.svg" alt="erase"></button></li>
+                <li><button class="icon"><img src="assets/undo.svg" alt="undo"></button></li>
+                <li><button class="icon"><img src="assets/clear.svg" alt="clear"></button></li>
+                <li><button class="icon"><img src="assets/stamp.svg" alt="stamp"></button></li>
+            </ul>
+        </section>
+        <section id="right">
+            <div id="params">
+                <input type="range" id="brush-size">
+                <input type="color" id="brush-color">
+            </div>
+            <canvas id="paint-canvas"></canvas>
+        </section>
+    </main>
+</body>
+</html>
+
+<script src="script/main.js"></script>
