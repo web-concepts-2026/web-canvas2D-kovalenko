@@ -9,12 +9,14 @@
 <body>
     <main>
         <section id="left">
-            <ul id="tools">
-                <li><button class="icon"><img src="assets/draw.svg" alt="draw"></button></li>
-                <li><button class="icon"><img src="assets/erase.svg" alt="erase"></button></li>
-                <li><button class="icon"><img src="assets/undo.svg" alt="undo"></button></li>
-                <li><button class="icon"><img src="assets/clear.svg" alt="clear"></button></li>
-                <li><button class="icon"><img src="assets/stamp.svg" alt="stamp"></button></li>
+            <ul id="tools" class="toolbar">
+                <li><button class="tool-btn" id="draw-btn"></button></li>
+                <li><button class="tool-btn" id="erase-btn"></button></li>
+                <li><button class="tool-btn" id="stamp-btn"></button></li>
+            </ul>
+            <ul id="actions" class="toolbar">
+                <li><button class="tool-btn" id="undo-btn"></button></li>
+                <li><button class="tool-btn" id="clear-btn"></button></li>
             </ul>
         </section>
         <section id="right">

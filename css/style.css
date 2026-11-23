@@ -17,21 +17,33 @@ main {
     height: 100vh;
 }
 
-#tools {
+#left {
     background-color: rgb(39, 39, 41);
     width: 80px;
     height: 100%;
 
-    padding-top: 10px;
-
     border-radius: 10px;
 
+    display: flex;
+    flex-direction: column;
+
+    gap: 30px;
+
+    padding: 10px 0;
+}
+
+.toolbar {
     list-style: none;
 
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 30px;
+
+}
+
+#actions {
+    margin-top: auto;
 }
 
 #right {
@@ -72,29 +84,51 @@ main {
     flex: 1;
 }
 
-.icon {
+.tool-btn {
     background-color: rgb(54, 54, 56);
     border: none;
     border-radius: 5px;
-
-    padding: 10px;
 
     cursor: pointer;
 
     width: 60px;
     height: 60px;
+
+    background-size: 70%;
+    background-repeat: no-repeat;
+    background-position: center;
 }
 
-.icon:hover {
+.tool-btn:hover {
     background-color: rgb(63, 63, 66);
 }
 
-.icon:active {
+.tool-btn:active {
     background-color: rgb(50, 50, 52);
 }
 
-.icon img {
+.tool-btn img {
     width: 100%;
+}
+
+#draw-btn {
+    background-image: url("../assets/draw.svg");
+}
+
+#erase-btn {
+    background-image: url("../assets/erase.svg");
+}
+
+#stamp-btn {
+    background-image: url("../assets/stamp.svg");
+}
+
+#undo-btn {
+    background-image: url("../assets/undo.svg");
+}
+
+#clear-btn {
+    background-image: url("../assets/clear.svg");
 }
 
 #paint-canvas {
