@@ -19,6 +19,37 @@ ctx.lineCap = "round";
 let lastX = undefined;
 let lastY = undefined;
 
+const tool_buttons = document.querySelectorAll(".tool-btn");
+
+const default_button_color = window.getComputedStyle(tool_buttons[0]).backgroundColor;
+const active_button_color = "#1c1b1c";
+document.querySelector("#draw-btn").style = `background-color: ${active_button_color}`;
+
+let undo_stack = [];
+
+function push_canvas() {
+    let canvas_copy = document.createElement('canvas');
+    let ctx_copy = canvas_copy.getContext('2d');
+
+    canvas_copy.width = canvas.width;
+    canvas_copy.height = canvas.height;
+    
+    ctx_copy.drawImage(canvas, 0, 0);
+
+    undo_stack.push(canvas_copy);
+}
+
+function pop_canvas() {
+    let prev_canv = undo_stack.pop();
+    if (!prev_canv) return;
+    clear_canvas();
+    ctx.drawImage(prev_canv, 0, 0);
+}
+
+function clear_canvas() {
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+}
+
 function onDraw(x, y) {
     ctx.beginPath();
     ctx.moveTo(lastX, lastY);
@@ -36,7 +67,7 @@ function onErase(x, y) {
 function onStamp(x, y) {
     const path = new Path2D("M256,0C114.843,0,0,114.843,0,256c0,141.157,114.843,256,256,256s256-114.843,256-256C512,114.843,397.157,0,256,0z M256,493.037C125.296,493.037,18.963,386.704,18.963,256C18.963,125.296,125.296,18.963,256,18.963S493.037,125.296,493.037,256 C493.037,386.704,386.704,493.037,256,493.037z M417.185,246.474H284.444h-37.926h-37.926H94.815c-5.236,0-9.482,4.267-9.482,9.505 c0,94.106,76.56,170.677,170.667,170.677s170.667-76.576,170.667-170.683C426.667,250.736,422.421,246.474,417.185,246.474z M256,265.436h18.963v47.407H256V265.436z M218.074,265.436h18.963v47.407h-18.963V265.436z M256,407.659 c-80.463,0-146.495-64-151.412-142.222h94.523v56.934c0,5.236,4.245,9.436,9.482,9.436h37.926h37.926 c5.236,0,9.481-4.2,9.481-9.436v-56.934h113.486C402.495,343.659,336.463,407.659,256,407.659z M170.667,113.778c-5.236,0-9.482,4.246-9.482,9.482v56.889c0,5.236,4.245,9.482,9.482,9.482s9.481-4.245,9.481-9.482 v-56.889C180.148,118.023,175.903,113.778,170.667,113.778z M322.37,113.778c-5.236,0-9.481,4.246-9.481,9.482v56.889c0,5.236,4.245,9.482,9.481,9.482s9.482-4.245,9.482-9.482 v-56.889C331.852,118.023,327.607,113.778,322.37,113.778z");
 
-    const width = ctx.lineWidth;
+    ctx.save();
 
     ctx.translate(x, y);
     ctx.scale(ctx.lineWidth / 100, ctx.lineWidth / 100);
@@ -44,9 +75,7 @@ function onStamp(x, y) {
     
     ctx.stroke(path);
 
-    ctx.lineWidth = width;
-    ctx.scale(100 / ctx.lineWidth, 100 / ctx.lineWidth);
-    ctx.translate(-x, -y);
+    ctx.restore();
 }
 
 function onIdle(x, y) {
@@ -70,6 +99,42 @@ window.addEventListener("mouseup", function (event) {
 });
 canvas.addEventListener("pointerleave", function (event) {
     stateMachine.next(event)
+})
+
+size_slider.addEventListener("change", () => {
+    ctx.lineWidth = size_slider.value;
+})
+
+color_picker.addEventListener("change", () => {
+    ctx.strokeStyle = color_picker.value;
+})
+
+tools.addEventListener("click", (e) => {
+    const btn = e.target.closest('.tool-btn');
+
+    if (!btn) return;
+
+    const prev_btn = document.querySelector(`#${tool_selected}`);
+    if (prev_btn) prev_btn.style = '';
+
+    tool_selected = btn.id;
+    btn.style = `background-color: ${active_button_color}`;
+})
+
+actions.addEventListener("click", (e) => {
+    const btn = e.target.closest('.tool-btn');
+
+    if (!btn) return;
+
+    switch(btn.id) {
+        case "undo-btn":
+            pop_canvas();
+            break;
+        case "clear-btn":
+            push_canvas();
+            clear_canvas();
+            break;
+    }
 })
 
 function state() {
@@ -103,10 +168,21 @@ function state() {
                     }
                     break;
                 case "mousedown":
-                    if (tool_selected == "stamp-btn") {
-                        onStamp(event.offsetX, event.offsetY)
+                    if (event.offsetX < ctx.canvas.width && event.offsetX > 0 && event.offsetY < ctx.canvas.height && event.offsetY > 0)
+                        push_canvas()
+
+                    switch (tool_selected) {
+                        case "draw-btn":
+                            onDraw(event.offsetX + 0.1, event.offsetY);
+                            break;
+                        case "erase-btn":
+                            onErase(event.offsetX, event.offsetY);
+                            break;
+                        case "stamp-btn":
+                            onStamp(event.offsetX, event.offsetY);
+                            break;
                     }
-                    else if (currentState === STATE.IDLE) {
+                    if (currentState === STATE.IDLE) {
                         currentState = STATE.DRAW;
                     }
                     break;
@@ -119,43 +195,3 @@ function state() {
         }
     }
 }
-
-size_slider.addEventListener("change", () => {
-    ctx.lineWidth = size_slider.value;
-})
-
-color_picker.addEventListener("change", () => {
-    ctx.strokeStyle = color_picker.value;
-})
-
-const tool_buttons = document.querySelectorAll(".tool-btn");
-
-const default_button_color = window.getComputedStyle(tool_buttons[0]).backgroundColor;
-const active_button_color = "#1c1b1c";
-document.querySelector("#draw-btn").style = `background-color: ${active_button_color}`;
-
-tools.addEventListener("click", (e) => {
-    const btn = e.target.closest('.tool-btn');
-
-    if (!btn) return;
-
-    const prev_btn = document.querySelector(`#${tool_selected}`);
-    if (prev_btn) prev_btn.style = '';
-
-    tool_selected = btn.id;
-    btn.style = `background-color: ${active_button_color}`;
-})
-
-actions.addEventListener("click", (e) => {
-    const btn = e.target.closest('.tool-btn');
-
-    if (!btn) return;
-
-    switch(btn.id) {
-        case "undo-btn":
-            break;
-        case "clear-btn":
-            ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-            break;
-    }
-})
