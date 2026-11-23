@@ -1,13 +1,16 @@
 const canvas = document.querySelector("#paint-canvas");
+const size_slider = document.querySelector("#brush-size");
+const color_picker = document.querySelector("#brush-color");
+
 const ctx = canvas.getContext("2d");
 
 const canvas_rect = canvas.getBoundingClientRect();
 ctx.canvas.width = canvas_rect.width;
 ctx.canvas.height = canvas_rect.height;
 
-ctx.lineWidth = 4;
-ctx.strokeStyle = "black"
-ctx.lineCap = "round"
+ctx.lineWidth = size_slider.value;
+ctx.strokeStyle = color_picker.value;
+ctx.lineCap = "round";
 
 let lastX = undefined;
 let lastY = undefined;
@@ -82,3 +85,11 @@ function state(onDraw, onIdle) {
         }
     }
 }
+
+size_slider.addEventListener("change", () => {
+    ctx.lineWidth = size_slider.value;
+})
+
+color_picker.addEventListener("change", () => {
+    ctx.strokeStyle = color_picker.value;
+})
