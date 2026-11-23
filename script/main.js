@@ -41,6 +41,9 @@ canvas.addEventListener("mouseup", function (event) {
 window.addEventListener("mouseup", function (event) {
     stateMachine.next(event)
 });
+canvas.addEventListener("pointerleave", function (event) {
+    stateMachine.next(event)
+})
 
 function state(onDraw, onIdle) {
     const STATE = {
@@ -68,6 +71,11 @@ function state(onDraw, onIdle) {
                 case "mousedown":
                     if (currentState === STATE.IDLE) {
                         currentState = STATE.DRAW;
+                    }
+                    break;
+                case "pointerleave":
+                    if (currentState === STATE.DRAW) {
+                        currentState = STATE.IDLE;
                     }
                     break;
             }
